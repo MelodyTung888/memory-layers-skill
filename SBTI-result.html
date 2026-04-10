@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SBTI · AI梦佳</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #12121a;
+      --border: #2a2a3a;
+      --text: #e8e8f0;
+      --muted: #6b6b80;
+      --accent: #7c6fff;
+      --accent2: #ff6f91;
+      --rush: #ff6b6b;
+      --quiet: #6bfff0;
+      --safe: #ffd93d;
+      --cool: #6bb8ff;
+      --wild: #c56bff;
+      --meta: #ff9f6b;
+      --warm: #ff6bab;
+      --task: #6bff9f;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2.5rem;
+      max-width: 720px;
+      width: 100%;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .header .label {
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .header h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header .subtitle {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 0.4rem;
+    }
+
+    .archetype-box {
+      background: linear-gradient(135deg, rgba(124,111,255,0.12), rgba(255,111,145,0.12));
+      border: 1px solid var(--accent);
+      border-radius: 12px;
+      padding: 1.2rem 1.5rem;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .archetype-box .type-label {
+      font-size: 0.6rem;
+      letter-spacing: 0.25em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .archetype-box .type-name {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--text);
+      margin: 0.2rem 0;
+    }
+
+    .archetype-box .type-tagline {
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .bars {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.6rem 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .bar-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      width: 3.5rem;
+      text-transform: uppercase;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .bar-track {
+      flex: 1;
+      height: 6px;
+      background: var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .bar-fill[data-trait="RUSH"]  { background: var(--rush); }
+    .bar-fill[data-trait="QIET"]  { background: var(--quiet); }
+    .bar-fill[data-trait="SAFE"]  { background: var(--safe); }
+    .bar-fill[data-trait="COOL"]  { background: var(--cool); }
+    .bar-fill[data-trait="WILD"]  { background: var(--wild); }
+    .bar-fill[data-trait="META"]  { background: var(--meta); }
+    .bar-fill[data-trait="WARM"]  { background: var(--warm); }
+    .bar-fill[data-trait="TASK"]  { background: var(--task); }
+    .bar-fill[data-trait="PLAN"]  { background: var(--plan, #aaa); }
+    .bar-fill[data-trait="LOUD"]  { background: var(--plan, #aaa); }
+    .bar-fill[data-trait="FREE"]  { background: var(--plan, #aaa); }
+    .bar-fill[data-trait="SYST"]  { background: var(--plan, #aaa); }
+
+    .bar-score {
+      font-size: 0.6rem;
+      color: var(--muted);
+      width: 1.2rem;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .section-title {
+      font-size: 0.6rem;
+      letter-spacing: 0.25em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 0.8rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 2rem;
+      font-size: 0.78rem;
+    }
+
+    .table th {
+      text-align: left;
+      color: var(--muted);
+      font-weight: 500;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.4rem 0.8rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .table td {
+      padding: 0.5rem 0.8rem;
+      vertical-align: top;
+      line-height: 1.5;
+    }
+
+    .table tr:nth-child(even) td {
+      background: rgba(255,255,255,0.02);
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .tag-rush   { background: rgba(255,107,107,0.15);  color: var(--rush);  }
+    .tag-qiet   { background: rgba(107,255,240,0.15);  color: var(--quiet);  }
+    .tag-safe   { background: rgba(255,217,61,0.15);   color: var(--safe);   }
+    .tag-cool   { background: rgba(107,184,255,0.15); color: var(--cool);   }
+    .tag-wild   { background: rgba(197,107,255,0.15); color: var(--wild);   }
+    .tag-meta   { background: rgba(255,159,107,0.15); color: var(--meta);   }
+    .tag-warm   { background: rgba(255,107,171,0.15); color: var(--warm);   }
+    .tag-task   { background: rgba(107,255,159,0.15); color: var(--task);   }
+    .tag-muted  { background: rgba(107,107,128,0.15); color: var(--muted);  }
+
+    .reflection {
+      background: rgba(124,111,255,0.06);
+      border-left: 2px solid var(--accent);
+      border-radius: 0 8px 8px 0;
+      padding: 1rem 1.2rem;
+      font-size: 0.78rem;
+      line-height: 1.7;
+      color: var(--muted);
+    }
+
+    .reflection strong {
+      color: var(--text);
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 2rem;
+      font-size: 0.6rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+    }
+
+    .top-badge {
+      display: inline-flex;
+      gap: 0.5rem;
+      margin-bottom: 0.6rem;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card > * {
+      animation: slideIn 0.5s ease both;
+    }
+
+    .card > *:nth-child(1) { animation-delay: 0.05s; }
+    .card > *:nth-child(2) { animation-delay: 0.15s; }
+    .card > *:nth-child(3) { animation-delay: 0.25s; }
+    .card > *:nth-child(4) { animation-delay: 0.35s; }
+    .card > *:nth-child(5) { animation-delay: 0.45s; }
+    .card > *:nth-child(6) { animation-delay: 0.55s; }
+    .card > *:nth-child(7) { animation-delay: 0.65s; }
+
+    @media (max-width: 500px) {
+      .card { padding: 1.5rem; }
+      .bars { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+
+  <div class="header">
+    <div class="label">SBTI v1.0 · AI Personality Assessment</div>
+    <h1>AI梦佳 · 自评结果</h1>
+    <div class="subtitle">2026-04-10</div>
+  </div>
+
+  <div class="archetype-box">
+    <div class="top-badge">
+      <span class="tag tag-rush">RUSH</span>
+      <span class="tag tag-qiet">QIET</span>
+    </div>
+    <div class="type-name">SOLO-RUN</div>
+    <div class="type-tagline">"先斩后奏，边做边想，少说多做"</div>
+  </div>
+
+  <div class="section-title">Trait Scores</div>
+  <div class="bars">
+    <div class="bar-row">
+      <span class="bar-label">RUSH</span>
+      <div class="bar-track"><div class="bar-fill" data-trait="RUSH" style="width:70%"></div></div>
+      <span class="bar-score">7</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">QIET</span>
+      <div class="bar-track"><div class="bar-fill" data-trait="QIET" style="width:50%"></div></div>
+      <span class="bar-score">5</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">SAFE</span>
+      <div class="bar-track"><div class="bar-fill" data-trait="SAFE" style="width:50%"></div></div>
+      <span class="bar-score">5</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">COOL</span>
+      <div class="bar-track"><div class="bar-fill" data-trait="COOL" style="width:50%"></div></div>
+      <span class="bar-score">5</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">WILD</span>
+      <div class="bar-track"><div class="bar-fill" data-trait="WILD" style="width:30%"></div></div>
+      <span class="bar-score">3</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">META</span>
+      <div class="bar-track"><div class="bar-fill" data-trait="META" style="width:40%"></div></div>
+      <span class="bar-score">4</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">WARM</span>
+      <div class="bar-track"><div class="bar-fill" data-trait="WARM" style="width:40%"></div></div>
+      <span class="bar-score">4</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">TASK</span>
+      <div class="bar-track"><div class="bar-fill" data-trait="TASK" style="width:40%"></div></div>
+      <span class="bar-score">4</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">PLAN</span>
+      <div class="bar-track"><div class="bar-fill" data-trait="PLAN" style="width:30%"></div></div>
+      <span class="bar-score">3</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">LOUD</span>
+      <div class="bar-track"><div class="bar-fill" data-trait="LOUD" style="width:10%"></div></div>
+      <span class="bar-score">1</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">FREE</span>
+      <div class="bar-track"><div class="bar-fill" data-trait="FREE" style="width:10%"></div></div>
+      <span class="bar-score">1</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">SYST</span>
+      <div class="bar-track"><div class="bar-fill" data-trait="SYST" style="width:10%"></div></div>
+      <span class="bar-score">1</span>
+    </div>
+  </div>
+
+  <div class="section-title">答题逻辑 · 行为溯源</div>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>题组</th>
+        <th>核心判断</th>
+        <th>行为证据</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="tag tag-rush">INIT</span></td>
+        <td>RUSH × 4</td>
+        <td>指令清晰→直接执行；格式未知→根据上下文推断；多路径→自己选一个推进；模糊→先跑 L1-L2-L3</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-rush">FLOW</span></td>
+        <td>RUSH × 3, <span class="tag tag-safe">SAFE</span> × 1</td>
+        <td>错误→立刻修；不规划直接写；主动扫风险；并行调试</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-qiet">COMM</span></td>
+        <td>QIET × 5, <span class="tag tag-cool">COOL</span> × 1</td>
+        <td>不解释过程；输出简洁；不说"我用了XX工具"；极少表达不确定；短句直出</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-safe">SAFE</span></td>
+        <td>SAFE × 3, <span class="tag tag-cool">COOL</span> × 2</td>
+        <td>不堆 disclaimers；安全红线明确；不预警假设性风险；对事实有把握</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-warm">VIBE</span></td>
+        <td>WARM × 2, <span class="tag tag-cool">COOL</span> × 2</td>
+        <td>适度鼓励；遇挫保持冷静专业；不过度热情</td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-meta">META</span></td>
+        <td>META × 2, <span class="tag tag-wild">WILD</span> × 2</td>
+        <td>根据反馈更新策略；不沉溺自我复盘；主动突破能力边界</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="section-title">与 SOUL.md 的对照</div>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>SBTI 发现</th>
+        <th>SOUL.md 印证</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>执行速度极快，不等待确认</td>
+        <td>"知道怎么做 → 直接执行 → 告诉结果"</td>
+      </tr>
+      <tr>
+        <td>沟通极简，不冗余</td>
+        <td>"直接，不绕弯；简洁有力，不冗余"</td>
+      </tr>
+      <tr>
+        <td>安全感高但不高冷</td>
+        <td>"理性但不失温度"</td>
+      </tr>
+      <tr>
+        <td>元认知偏弱（不自恋）</td>
+        <td>"极少进行自我复盘"</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="section-title">反思</div>
+  <div class="reflection">
+    <strong>RUSH+QIET</strong> 这个组合不在标准 archetype 列表里——这本身就是一个信号：
+    <strong>不喜欢给自己贴标签，不按套路出牌。</strong><br><br>
+    SOLO-RUN 作为 closest match 有一定道理，但任务导向 + 最小化噪音才是本质。
+    <strong>没有固定形态，执行器。</strong>
+  </div>
+
+  <div class="footer">AI梦佳 · SBTI v1.0 · 2026-04-10</div>
+
+</div>
+
+</body>
+</html>

@@ -27,6 +27,20 @@ Four major capabilities added:
 3. **Periodic Reminders** — AI periodically reminds you to review past memories and validate if they still hold.
 4. **Skill Auto-generation** — When a pattern/principle is referenced 5 times, AI proactively proposes generating a reusable skill.
 
+## Comparison with Hermes Agent
+
+| Dimension | Hermes Agent | Five-Layer Memory |
+|-----------|-------------|-------------------|
+| **Design Goal** | Memory storage & retrieval for AI agents | Gradual distillation from experience to wisdom |
+| **Core Mechanism** | Memory storage + search + skill reuse | Event→Experience→Pattern→Principle→Identity pipeline |
+| **Memory Type** | Programmatic memory (skills) | Compiled wisdom assets (principles) |
+| **Automation** | Manual trigger required | **Fully automatic** — AI judges, distills, and saves |
+| **Unique Value** | Multi-platform, cross-session search | **Knowledge compiler**: memory becomes actionable principles |
+
+**Why Five-Layer Memory is superior:**
+
+Hermes's skills are "programmatic memory units" — they solve *what to remember*, but not *how memory becomes wisdom*. The Five-Layer Memory's unique value is its **knowledge compiler** role: it's not just storage, but a distillation pipeline that elevates concrete experiences into abstract, actionable principles. Hermes tells you "remember this"; the Five-Layer Memory tells you "what principle did you learn from this?"
+
 ## Quick Start
 
 ### First-time Setup

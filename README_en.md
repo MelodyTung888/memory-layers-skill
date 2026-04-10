@@ -18,7 +18,28 @@ A wisdom system that gradually elevates scattered experiences into actionable pr
 
 **Core philosophy**: Knowledge must be compiled once and maintained continuously. Not re-derived every time, but elevated layer by layer.
 
+## v2.0 New Features (2026-04-10)
+
+Four major capabilities added:
+
+1. **Auto-distill** — AI automatically judges whether content is worth preserving at end of conversation, distills and saves silently. Zero burden.
+2. **FTS5 Full-text Search** — Search across all memories instantly.
+3. **Periodic Reminders** — AI periodically reminds you to review past memories and validate if they still hold.
+4. **Skill Auto-generation** — When a pattern/principle is referenced 5 times, AI proactively proposes generating a reusable skill.
+
 ## Quick Start
+
+### First-time Setup
+
+On first use, the AI will ask:
+
+```
+Please tell me the folder path where you want to store your memories, e.g.: ~/memory-vault or ~/Desktop/my-memories
+
+(This folder will be created automatically — you just need to decide where and give it a name.)
+```
+
+Everything else uses sensible defaults. No manual configuration needed.
 
 ### AI Installation (let another AI download this skill)
 
@@ -45,6 +66,7 @@ git clone https://github.com/MelodyTung888/memory-layers-skill.git ~/.claude/ski
 | 从事件提炼经验、从经验找规律 | `ascend` | Single-layer elevation |
 | 检查记忆系统、健康检查 | `status` | System health check |
 | 生成记忆报告、给我讲讲我的模式 | `report` | Memory report |
+| (no keyword, worth distilling) | `auto-distill` | **Auto-distill** |
 
 ## Core Constraints (Red Lines)
 
@@ -53,18 +75,25 @@ git clone https://github.com/MelodyTung888/memory-layers-skill.git ~/.claude/ski
 3. **No one-shot completion**: The five layers are an iterative system
 4. **No context-free principles**: Principles must be tied to specific domains/scenarios
 5. **No L4 restating L3**: Principles must be more specific and actionable than patterns
+6. **No skipping save**: When content is worth distilling, it must be written to vault
+7. **No skipping index**: Every save is automatically indexed to the search database
 
-## Directory Structure
+## Standard Vault Structure
 
 ```
-memory-layers/
-├── SKILL.md              # Entry point
-└── workflows/
-    ├── distill.md        # Full five-layer distillation
-    ├── record-event.md   # Event recording
-    ├── ascend.md         # Layer ascension
-    ├── status.md         # System health check
-    └── report.md         # Memory report
+vault/
+├── CLAUDE.md              # Vault self-doc
+├── .config.json           # User config (generated on first setup)
+├── layers/                # Five-layer memory storage
+│   ├── L1-events/        # Event layer
+│   ├── L2-experiences/   # Experience layer
+│   ├── L3-patterns/       # Pattern layer
+│   ├── L4-principles/     # Principle layer
+│   ├── L5-identity/       # Identity layer
+│   └── .index.json        # Global index
+├── search/                # FTS5 search database
+├── reminders/             # Periodic reminders
+└── inbox/                 # Quick inbox
 ```
 
 ## Example

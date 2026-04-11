@@ -180,6 +180,7 @@ vault/
 
 | 工作流 | 文件 |
 |--------|------|
+| setup（首次配置） | `workflows/setup.md` |
 | distill（完整五层沉淀） | `workflows/distill.md` |
 | record-event（事件记录） | `workflows/record-event.md` |
 | ascend（层级升华） | `workflows/ascend.md` |

@@ -43,7 +43,17 @@
 ### Step 3：写入 vault
 
 ```
-VAULT="$HOME/Desktop/melody/AI梦佳/五层记忆-vault"
+# 读取 vault 路径配置
+CONFIG="$HOME/.claude/skills/memory-layers/.config.json"
+if [ -f "$CONFIG" ]; then
+  VAULT=$(jq -r '.vault_path // empty' "$CONFIG" 2>/dev/null)
+fi
+
+# 如果没有配置，提示用户设置
+if [ -z "$VAULT" ] || [ "$VAULT" = "null" ]; then
+  echo "SETUP_REQUIRED"
+  exit 1
+fi
 
 # 确定输出路径
 case $沉淀深度 in
@@ -57,7 +67,8 @@ cat > "$OUT" << 'EOF'
 EOF
 
 # 索引到 FTS5
-~/.claude/scripts/memory-layers-index.sh "$LAYER" "$TITLE" "$CONTENT" "$OUT" "$(date +%Y-%m-%d)"
+SCRIPTS_PATH=$(jq -r '.scripts_path // "$HOME/.claude/scripts"' "$CONFIG" 2>/dev/null)
+"$SCRIPTS_PATH/memory-layers-index.sh" "$LAYER" "$TITLE" "$CONTENT" "$OUT" "$(date +%Y-%m-%d)"
 ```
 
 ### Step 4：自动 L3→L4 提炼

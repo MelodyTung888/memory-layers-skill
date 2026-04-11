@@ -13,8 +13,9 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 SKILL_DIR="$(dirname "$SCRIPT_DIR")"
 CONFIG="$SKILL_DIR/.config.json"
 
+# Get vault path from config (pure bash JSON parsing - no jq dependency)
 if [ -f "$CONFIG" ]; then
-    VAULT=$(jq -r '.vault_path // empty' "$CONFIG" 2>/dev/null)
+    VAULT=$(grep -o '"vault_path"[[:space:]]*:[[:space:]]*"[^"]*"' "$CONFIG" | sed 's/.*"vault_path"[[:space:]]*:[[:space:]]*"\([^"]*\)"/\1/' | tr -d ' ')
 fi
 
 if [ -z "$VAULT" ] || [ "$VAULT" = "null" ]; then
@@ -22,7 +23,9 @@ if [ -z "$VAULT" ] || [ "$VAULT" = "null" ]; then
     exit 1
 fi
 
-VAULT="$(cd "$VAULT" 2>/dev/null && pwd)"
+if [[ "$VAULT" != /* ]]; then
+    VAULT="$(cd "$VAULT" 2>/dev/null && pwd)"
+fi
 DB="$VAULT/search/memory-search.db"
 
 if [ ! -f "$DB" ]; then
@@ -40,21 +43,21 @@ ESCAPED_QUERY="$(echo "$QUERY" | sed "s/'/''/g")"
 
 # Build SQL query
 if [ -n "$LAYER_FILTER" ]; then
-    SQL="SELECT layer, title, date, file_path,
+    SQL="SELECT memories.layer, memories.title, memories.date, memories.file_path,
                 highlight(memories_fts, 1, '**', '**') as snippet
          FROM memories_fts
          JOIN memories ON memories_fts.rowid = memories.id
          WHERE memories_fts MATCH '$ESCAPED_QUERY'
-           AND layer = '$LAYER_FILTER'
-         ORDER BY layer_rank ASC, rank
+           AND memories.layer = '$LAYER_FILTER'
+         ORDER BY memories.layer_rank ASC, rank
          LIMIT $LIMIT;"
 else
-    SQL="SELECT layer, title, date, file_path,
+    SQL="SELECT memories.layer, memories.title, memories.date, memories.file_path,
                 highlight(memories_fts, 1, '**', '**') as snippet
          FROM memories_fts
          JOIN memories ON memories_fts.rowid = memories.id
          WHERE memories_fts MATCH '$ESCAPED_QUERY'
-         ORDER BY layer_rank ASC, rank
+         ORDER BY memories.layer_rank ASC, rank
          LIMIT $LIMIT;"
 fi
 

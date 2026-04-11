@@ -16,23 +16,22 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 SKILL_DIR="$(dirname "$SCRIPT_DIR")"
 CONFIG="$SKILL_DIR/.config.json"
 
-# Get vault path from config, or derive from file path
+# Get vault path from config (pure bash JSON parsing - no jq dependency)
 if [ -f "$CONFIG" ]; then
-    VAULT=$(jq -r '.vault_path // empty' "$CONFIG" 2>/dev/null)
+    VAULT=$(grep -o '"vault_path"[[:space:]]*:[[:space:]]*"[^"]*"' "$CONFIG" | sed 's/.*"vault_path"[[:space:]]*:[[:space:]]*"\([^"]*\)"/\1/' | tr -d ' ')
 fi
 
+# Must have vault path configured
 if [ -z "$VAULT" ] || [ "$VAULT" = "null" ]; then
-    # Try to derive from the file path if it's an absolute path
-    if [[ "$FILE_PATH" == /* ]]; then
-        VAULT="$(dirname "$FILE_PATH")/../.."
-    else
-        echo "Error: vault path not configured. Run memory-layers setup first." >&2
-        exit 1
-    fi
+    echo "Error: vault path not configured. Run memory-layers setup first." >&2
+    exit 1
 fi
 
 # Ensure vault path is absolute
-VAULT="$(cd "$VAULT" 2>/dev/null && pwd)"
+if [[ "$VAULT" != /* ]]; then
+    VAULT="$(cd "$VAULT" 2>/dev/null && pwd)"
+fi
+
 DB_DIR="$VAULT/search"
 DB="$DB_DIR/memory-search.db"
 
